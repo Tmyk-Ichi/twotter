@@ -2,6 +2,7 @@
 <div class="user-profile">
         <div class="user-profile__user-panel">
             <h1 class="user-profile_username"> @{{state.user.username}}</h1>
+            <h2>{{userId}}</h2>
             <div class="user-profile__admin-badge" v-if="state.user.isAdmin">Admin</div>
             <div class="user-profile__admin-badge" v-else>Not Admin</div>
         <div class="user-profile__follower-count">
@@ -16,35 +17,29 @@
         :key="twoot.id"
         :username="state.user.username"
         :twoot="twoot"
-        @favorite='toggleFavorite'/>
+        />
         </div>
 </div>
 </template>
 
 <script>
-import {reactive} from 'vue';
-import TwootItem from './TwootItem';
-import CreateTwootPanel from './CreateTwootPanel'
+import {reactive,computed} from 'vue';
+import {useRoute} from 'vue-router'
+import {users} from '../assets/users'
+import TwootItem from '../components/TwootItem';
+import CreateTwootPanel from '../components/CreateTwootPanel'
 
 export default {
     name:'UserProfile',
     components:{TwootItem,CreateTwootPanel},
     setup(){
+      const route = useRoute();
+      const userId = computed(()=>route.params.userId)
+
       const state = reactive(
         {
       followers: 0,
-      user:{
-        id:1,
-        username:'_Tomoyuki',
-        firstname:'Tomoyuki',
-        lastname:'Ichikawa',
-        email:'tmyk.ichikawa@gmail.com',
-        isAdmin:false,
-        twoots:[
-            {id:1,content:'Twotter is amazing'},
-            {id:2,content:'I can do it'},
-        ]
-      }
+      user:users[userId.value-1]||users[0],
       })
 
       const addTwoot = (twoot)=>{
@@ -54,7 +49,11 @@ export default {
             })
       }
 
-      return {state,addTwoot}
+      return {
+        state,
+      addTwoot,
+      userId
+      };
 
   }
   };
@@ -62,32 +61,36 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.user-profile{
-    display: grid;
-    grid-template-columns:1fr 3fr;
-    grid-gap:50px;
-    padding:50px 5%;
-
-    .user-profile__user-panel {
+.user-profile {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  grid-gap: 50px;
+  padding: 50px 5%;
+  .user-profile__user-panel {
     display: flex;
     flex-direction: column;
-    padding:20px;
-    background-color:white;
+    padding: 20px;
+    background-color: white;
     border-radius: 5px;
-    border:1px solid #DFE3E8;
+    border: 1px solid #DFE3E8;
     margin-bottom: auto;
-
-    .user-profile__admin-badge{
-    background: rebeccapurple;
+    h1 {
+      margin: 0;
+    }
+    .user-profile__admin-badge {
+      background: rebeccapurple;
       color: white;
       border-radius: 5px;
       margin-right: auto;
       padding: 0 10px;
       font-weight: bold;
+    }
+  }
+  .user-profile__twoots-wrapper {
+    display: grid;
+    grid-gap: 10px;
+    margin-bottom: auto;
+  }
 }
-h1{
-    margin:0;
-}
-}
-}
+
 </style>
