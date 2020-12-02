@@ -1,63 +1,54 @@
 <template>
-<div class="user-profile">
-        <div class="user-profile__user-panel">
-            <h1 class="user-profile_username"> @{{state.user.username}}</h1>
-            <h2>{{userId}}</h2>
-            <div class="user-profile__admin-badge" v-if="state.user.isAdmin">Admin</div>
-            <div class="user-profile__admin-badge" v-else>Not Admin</div>
+  <div class="user-profile">
+    <div class="user-profile__sidebar">
+      <div class="user-profile__user-panel">
+        <h1 class="user-profile__username">@{{ state.user.username }}</h1>
+        <div class="user-profile__admin-badge" v-if="state.user.isAdmin">
+          Admin
+        </div>
         <div class="user-profile__follower-count">
-            <strong>Follows:</strong>{{state.followers}}
+          <strong>Followers: </strong> {{ state.followers }}
         </div>
-        <CreateTwootPanel @add-twoot='addTwoot'/>
-
-</div>
-        <div class="user-profile__twoots-wrapper">
-        <TwootItem
-        v-for='twoot in state.user.twoots'
-        :key="twoot.id"
-        :username="state.user.username"
-        :twoot="twoot"
-        />
-        </div>
-</div>
+      </div>
+      <CreateTwootPanel @add-twoot="addTwoot"/>
+    </div>
+    <div class="user-profile__twoots-wrapper">
+      <TwootItem
+          v-for="twoot in state.user.twoots"
+          :key="twoot.id"
+          :username="state.user.username"
+          :twoot="twoot"
+      />
+    </div>
+  </div>
 </template>
 
 <script>
-import {reactive,computed} from 'vue';
-import {useRoute} from 'vue-router'
-import {users} from '../assets/users'
-import TwootItem from '../components/TwootItem';
-import CreateTwootPanel from '../components/CreateTwootPanel'
-
+import { reactive, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { users } from "../assets/users";
+import TwootItem from "../components/TwootItem";
+import CreateTwootPanel from "../components/CreateTwootPanel";
 export default {
-    name:'UserProfile',
-    components:{TwootItem,CreateTwootPanel},
-    setup(){
-      const route = useRoute();
-      const userId = computed(()=>route.params.userId)
-
-      const state = reactive(
-        {
+  name: "UserProfile",
+  components: { CreateTwootPanel, TwootItem },
+  setup() {
+    const route = useRoute();
+    const userId = computed(() => route.params.userId)
+    const state = reactive({
       followers: 0,
-      user:users[userId.value-1]||users[0],
-      })
-
-      const addTwoot = (twoot)=>{
-          state.user.twoots.unshift({
-                id:state.user.twoots.length+1,
-                content:twoot
-            })
-      }
-
-      return {
-        state,
+      user: users[userId.value - 1] || users[0]
+    })
+    function addTwoot(twoot) {
+      state.user.twoots.unshift({ id: state.user.twoots.length + 1, content: twoot });
+    }
+    return {
+      state,
       addTwoot,
       userId
-      };
-
+    }
   }
-  };
-
+};
 </script>
 
 <style lang="scss" scoped>
@@ -92,5 +83,4 @@ export default {
     margin-bottom: auto;
   }
 }
-
 </style>
